@@ -1,16 +1,31 @@
-# React + Vite
+# Eventra Events | Quotation App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, professional web application for generating catering quotations and internal team sheets.
 
-Currently, two official plugins are available:
+## Features
+- **Modern UI**: Built with React and a custom premium design system.
+- **Event Planner**: Comprehensive form to capture event details, guest counts, and service styles.
+- **Menu Selection**: Categorized menu with quantity and unit tracking.
+- **Professional Quotations**: Elegant, print-ready PDFs for customers.
+- **Team Sheets**: Internal operational documents for kitchen and service staff.
+- **Brand Identity**: Customizable for Eventra Events branding.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
+- **Frontend**: React (Vite)
+- **Styling**: Vanilla CSS (Modern Design Tokens)
+- **Icons/Logo**: Custom generated assets
 
-## React Compiler
+## Local Development
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Hosting on Render
+1. Connect this GitHub repository to Render.
+2. Select **Static Site**.
+3. **Build Command**: `npm run build`
+4. **Publish Directory**: `dist`
+5. Click **Deploy**.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+Powered by Haxord Technologies
