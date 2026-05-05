@@ -25,6 +25,11 @@ body {
   background-color: var(--light);
   color: var(--dark);
   line-height: 1.6;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  overscroll-behavior-y: contain;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 h1, h2, h3, .brand-font {
@@ -65,13 +70,19 @@ h1, h2, h3, .brand-font {
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   font-size: 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  touch-action: manipulation;
+}
+
+.btn:active {
+  transform: scale(0.96);
+  opacity: 0.9;
 }
 
 .btn-primary {
@@ -228,12 +239,53 @@ input:focus, select:focus, textarea:focus {
   display: none;
 }
 
-/* Admin Specific */
-.admin-sidebar {
+/* Bottom Navigation for Mobile */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: var(--white);
-  border-right: 1px solid var(--border);
-  padding: 1.5rem;
-  height: 100%;
+  border-top: 1px solid var(--border);
+  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom));
+  z-index: 1000;
+  justify-content: space-around;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 767px) {
+  .bottom-nav {
+    display: flex;
+  }
+  .nav-actions {
+    display: none; /* Hide top actions on mobile, use bottom nav instead */
+  }
+  .container {
+    padding-bottom: 5rem; /* Space for bottom nav */
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 600;
+  flex: 1;
+  padding: 0.5rem 0;
+  transition: color 0.2s;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary);
+}
+
+.bottom-nav-icon {
+  font-size: 1.2rem;
 }
 
 .admin-list-item {

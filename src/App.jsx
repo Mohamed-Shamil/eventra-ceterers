@@ -143,7 +143,39 @@ function App() {
         )}
       </main>
 
-      <footer className="no-print" style={{ textAlign: "center", padding: "2rem", color: "var(--muted)", fontSize: "0.9rem" }}>
+      {/* Bottom Navigation (Mobile Only) */}
+      <div className="bottom-nav no-print">
+        <div 
+          className={`bottom-nav-item ${step === 0 ? "active" : ""}`} 
+          onClick={() => setStep(0)}
+        >
+          <span className="bottom-nav-icon">📋</span>
+          <span>Planner</span>
+        </div>
+        <div 
+          className={`bottom-nav-item ${step === 1 ? "active" : ""}`} 
+          onClick={() => setStep(1)}
+        >
+          <span className="bottom-nav-icon">📄</span>
+          <span>Quote</span>
+        </div>
+        <div 
+          className={`bottom-nav-item ${step === 2 ? "active" : ""}`} 
+          onClick={() => setStep(2)}
+        >
+          <span className="bottom-nav-icon">👥</span>
+          <span>Team</span>
+        </div>
+        <div 
+          className={`bottom-nav-item ${step === 3 ? "active" : ""}`} 
+          onClick={() => setStep(3)}
+        >
+          <span className="bottom-nav-icon">⚙️</span>
+          <span>Admin</span>
+        </div>
+      </div>
+
+      <footer className="no-print" style={{ textAlign: "center", padding: "2rem", color: "var(--muted)", fontSize: "0.9rem", marginBottom: "4rem" }}>
         &copy; {new Date().getFullYear()} Eventra Events & Catering. All rights reserved.
       </footer>
     </div>

@@ -1,0 +1,17 @@
+{
+  "name": "Eventra Events",
+  "short_name": "Eventra",
+  "description": "Premium Catering & Events Planner",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1A3636",
+  "theme_color": "#1A3636",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
