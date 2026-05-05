@@ -13,8 +13,7 @@ export default function AdminPanel({ onBack }) {
   const [modal, setModal] = useState({
     isOpen: false,
     title: "",
-    value: "",
-    placeholder: "",
+    fields: [],
     onConfirm: null
   });
 
@@ -22,21 +21,26 @@ export default function AdminPanel({ onBack }) {
     saveAppData(data);
   }, [data]);
 
-  const openModal = (title, initialValue, placeholder, onConfirm) => {
+  const openModal = (title, fields, onConfirm) => {
     setModal({
       isOpen: true,
       title,
-      value: initialValue,
-      placeholder,
-      onConfirm: (val) => {
-        onConfirm(val);
+      fields,
+      onConfirm: (values) => {
+        onConfirm(values);
         closeModal();
       }
     });
   };
 
   const closeModal = () => {
-    setModal(prev => ({ ...prev, isOpen: false, value: "" }));
+    setModal(prev => ({ ...prev, isOpen: false }));
+  };
+
+  // Normalization helper
+  const getItemData = (item) => {
+    if (typeof item === 'string') return { name: item, price: "" };
+    return { name: item.name, price: item.price || "" };
   };
 
   // --- Category Actions ---
@@ -52,8 +56,10 @@ export default function AdminPanel({ onBack }) {
   };
 
   const renameCategory = (oldName) => {
-    openModal("Rename Category", oldName, "Category name", (newName) => {
-      const trimmed = newName.trim();
+    openModal("Rename Category", [
+      { key: "name", label: "Category Name", initialValue: oldName, autoFocus: true }
+    ], (vals) => {
+      const trimmed = vals.name.trim();
       if (!trimmed || trimmed === oldName) return;
       if (data.menu[trimmed]) return alert("Category name already exists");
       
@@ -67,7 +73,7 @@ export default function AdminPanel({ onBack }) {
   };
 
   const deleteCategory = (cat) => {
-    if (!window.confirm(`Delete category "${cat}" and all its contents?`)) return;
+    if (!window.confirm(`Delete category "${cat}"?`)) return;
     setData(prev => {
       const newMenu = { ...prev.menu };
       delete newMenu[cat];
@@ -77,8 +83,10 @@ export default function AdminPanel({ onBack }) {
 
   // --- Subcategory Actions ---
   const addSubcategory = (cat) => {
-    openModal("Add Subcategory", "", "e.g. Seafood, Chicken...", (subName) => {
-      const trimmed = subName.trim();
+    openModal("Add Subcategory", [
+      { key: "name", label: "Subcategory Name", placeholder: "e.g. Seafood", autoFocus: true }
+    ], (vals) => {
+      const trimmed = vals.name.trim();
       if (!trimmed) return;
       if (data.menu[cat][trimmed]) return alert("Subcategory already exists");
       
@@ -91,8 +99,10 @@ export default function AdminPanel({ onBack }) {
   };
 
   const renameSubcategory = (cat, oldSub) => {
-    openModal("Rename Subcategory", oldSub, "Subcategory name", (newSub) => {
-      const trimmed = newSub.trim();
+    openModal("Rename Subcategory", [
+      { key: "name", label: "Subcategory Name", initialValue: oldSub, autoFocus: true }
+    ], (vals) => {
+      const trimmed = vals.name.trim();
       if (!trimmed || trimmed === oldSub) return;
       if (data.menu[cat][trimmed]) return alert("Subcategory already exists");
 
@@ -120,8 +130,11 @@ export default function AdminPanel({ onBack }) {
 
   // --- Item Actions ---
   const addItem = (cat, sub) => {
-    openModal(`Add Item to ${sub}`, "", "Item name...", (itemName) => {
-      const trimmed = itemName.trim();
+    openModal(`Add Item to ${sub}`, [
+      { key: "name", label: "Item Name", placeholder: "e.g. Chicken 65", autoFocus: true },
+      { key: "price", label: "Default Price (Optional)", placeholder: "e.g. 150", type: "number" }
+    ], (vals) => {
+      const trimmed = vals.name.trim();
       if (!trimmed) return;
       
       setData(prev => {
@@ -129,12 +142,13 @@ export default function AdminPanel({ onBack }) {
         const catData = { ...newMenu[cat] };
         const subData = [...(catData[sub] || [])];
         
-        if (subData.includes(trimmed)) {
+        const exists = subData.some(i => (typeof i === 'string' ? i : i.name) === trimmed);
+        if (exists) {
           alert("Item already exists in this section");
           return prev;
         }
         
-        catData[sub] = [...subData, trimmed];
+        catData[sub] = [...subData, { name: trimmed, price: vals.price }];
         newMenu[cat] = catData;
         return { ...prev, menu: newMenu };
       });
@@ -142,14 +156,21 @@ export default function AdminPanel({ onBack }) {
   };
 
   const editItem = (cat, sub, oldItem) => {
-    openModal("Edit Item", oldItem, "Item name...", (newItemName) => {
-      const trimmed = newItemName.trim();
-      if (!trimmed || trimmed === oldItem) return;
+    const current = getItemData(oldItem);
+    openModal("Edit Item", [
+      { key: "name", label: "Item Name", initialValue: current.name, autoFocus: true },
+      { key: "price", label: "Default Price (Optional)", initialValue: current.price, type: "number" }
+    ], (vals) => {
+      const trimmed = vals.name.trim();
+      if (!trimmed) return;
 
       setData(prev => {
         const newMenu = { ...prev.menu };
         const catData = { ...newMenu[cat] };
-        catData[sub] = catData[sub].map(i => i === oldItem ? trimmed : i);
+        catData[sub] = catData[sub].map(i => {
+          const iName = typeof i === 'string' ? i : i.name;
+          return iName === current.name ? { name: trimmed, price: vals.price } : i;
+        });
         newMenu[cat] = catData;
         return { ...prev, menu: newMenu };
       });
@@ -157,10 +178,11 @@ export default function AdminPanel({ onBack }) {
   };
 
   const deleteItem = (cat, sub, item) => {
+    const targetName = typeof item === 'string' ? item : item.name;
     setData(prev => {
       const newMenu = { ...prev.menu };
       const catData = { ...newMenu[cat] };
-      catData[sub] = catData[sub].filter(i => i !== item);
+      catData[sub] = catData[sub].filter(i => (typeof i === 'string' ? i : i.name) !== targetName);
       newMenu[cat] = catData;
       return { ...prev, menu: newMenu };
     });
@@ -206,10 +228,8 @@ export default function AdminPanel({ onBack }) {
       <Modal 
         isOpen={modal.isOpen}
         title={modal.title}
-        value={modal.value}
-        placeholder={modal.placeholder}
-        onChange={(val) => setModal(prev => ({ ...prev, value: val }))}
-        onConfirm={() => modal.onConfirm(modal.value)}
+        fields={modal.fields}
+        onConfirm={modal.onConfirm}
         onCancel={closeModal}
       />
 
@@ -267,23 +287,29 @@ export default function AdminPanel({ onBack }) {
                     </div>
                     
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem" }}>
-                      {items.map(item => (
-                        <div key={item} className="badge" style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
-                          gap: "0.6rem", 
-                          padding: "0.5rem 1rem",
-                          background: "white",
-                          border: "1px solid var(--border)",
-                          borderRadius: "20px"
-                        }}>
-                          <span style={{ fontWeight: 600, color: "#333" }}>{item}</span>
-                          <div style={{ display: "flex", gap: "0.4rem", borderLeft: "1px solid #eee", paddingLeft: "0.5rem" }}>
-                            <span title="Edit" style={{ cursor: "pointer", color: "var(--primary)", fontSize: "0.8rem" }} onClick={() => editItem(cat, sub, item)}>✎</span>
-                            <span title="Delete" style={{ cursor: "pointer", color: "var(--error)", fontSize: "1.1rem", lineHeight: "1" }} onClick={() => deleteItem(cat, sub, item)}>×</span>
+                      {items.map((item, idx) => {
+                        const info = getItemData(item);
+                        return (
+                          <div key={idx} className="badge" style={{ 
+                            display: "flex", 
+                            alignItems: "center", 
+                            gap: "0.6rem", 
+                            padding: "0.5rem 1rem",
+                            background: "white",
+                            border: "1px solid var(--border)",
+                            borderRadius: "20px"
+                          }}>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                              <span style={{ fontWeight: 600, color: "#333" }}>{info.name}</span>
+                              {info.price && <span style={{ fontSize: "0.65rem", color: "var(--primary)" }}>₹{info.price}</span>}
+                            </div>
+                            <div style={{ display: "flex", gap: "0.4rem", borderLeft: "1px solid #eee", paddingLeft: "0.5rem" }}>
+                              <span title="Edit" style={{ cursor: "pointer", color: "var(--primary)", fontSize: "0.8rem" }} onClick={() => editItem(cat, sub, item)}>✎</span>
+                              <span title="Delete" style={{ cursor: "pointer", color: "var(--error)", fontSize: "1.1rem", lineHeight: "1" }} onClick={() => deleteItem(cat, sub, item)}>×</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       {items.length === 0 && <div style={{ fontSize: "0.8rem", color: "#999", fontStyle: "italic" }}>No items in this section</div>}
                     </div>
                   </div>

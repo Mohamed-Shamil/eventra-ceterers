@@ -9,12 +9,13 @@ export default function QuotationForm({
   const toggleCat = (cat) => setOpenCats(p => ({ ...p, [cat]: !p[cat] }));
 
   const toggleItem = (item) => {
+    const itemName = typeof item === 'string' ? item : item.name;
     setMenuItems(p => {
       const n = { ...p };
-      if (n[item]) {
-        delete n[item];
+      if (n[itemName]) {
+        delete n[itemName];
       } else {
-        n[item] = { qty: "", unit: "nos" };
+        n[itemName] = { qty: "", unit: "nos" };
       }
       return n;
     });
@@ -160,36 +161,43 @@ export default function QuotationForm({
                       {subcat}
                     </div>
                     <div className="grid grid-3">
-                      {items.map(item => (
-                        <div key={item} style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                          <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontSize: "0.9rem" }}>
-                            <input 
-                              type="checkbox" 
-                              checked={!!menuItems[item]} 
-                              onChange={() => toggleItem(item)}
-                              style={{ width: "auto" }}
-                            />
-                            {item}
-                          </label>
-                          {menuItems[item] && (
-                            <div style={{ display: "flex", gap: "0.2rem", marginLeft: "1.5rem" }}>
+                      {items.map(item => {
+                        const iName = typeof item === 'string' ? item : item.name;
+                        const iPrice = typeof item === 'string' ? null : item.price;
+                        return (
+                          <div key={iName} style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontSize: "0.9rem" }}>
                               <input 
-                                style={{ padding: "0.2rem", fontSize: "0.8rem" }} 
-                                placeholder="Qty" 
-                                value={menuItems[item].qty}
-                                onChange={e => updateItemMeta(item, "qty", e.target.value)}
+                                type="checkbox" 
+                                checked={!!menuItems[iName]} 
+                                onChange={() => toggleItem(item)}
+                                style={{ width: "auto" }}
                               />
-                              <select 
-                                style={{ padding: "0.2rem", fontSize: "0.8rem" }}
-                                value={menuItems[item].unit}
-                                onChange={e => updateItemMeta(item, "unit", e.target.value)}
-                              >
-                                {["nos","kg","ltr","plate","pcs"].map(u => <option key={u}>{u}</option>)}
-                              </select>
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                              <div style={{ display: "flex", flexDirection: "column" }}>
+                                <span style={{ fontWeight: menuItems[iName] ? "700" : "400" }}>{iName}</span>
+                                {iPrice && <span style={{ fontSize: "0.7rem", color: "var(--primary)", fontWeight: "700" }}>₹{iPrice}</span>}
+                              </div>
+                            </label>
+                            {menuItems[iName] && (
+                              <div style={{ display: "flex", gap: "0.2rem", marginLeft: "1.5rem" }}>
+                                <input 
+                                  style={{ padding: "0.2rem", fontSize: "0.8rem" }} 
+                                  placeholder="Qty" 
+                                  value={menuItems[iName].qty}
+                                  onChange={e => updateItemMeta(iName, "qty", e.target.value)}
+                                />
+                                <select 
+                                  style={{ padding: "0.2rem", fontSize: "0.8rem" }}
+                                  value={menuItems[iName].unit}
+                                  onChange={e => updateItemMeta(iName, "unit", e.target.value)}
+                                >
+                                  {["nos","kg","ltr","plate","pcs"].map(u => <option key={u}>{u}</option>)}
+                                </select>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
