@@ -31,10 +31,10 @@ body {
   color: var(--dark);
   line-height: 1.6;
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  user-select: none;
-  overscroll-behavior-y: contain;
   padding-bottom: env(safe-area-inset-bottom);
+  /* Ensure scrolling is smooth and natural */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1, h2, h3, .brand-font {
