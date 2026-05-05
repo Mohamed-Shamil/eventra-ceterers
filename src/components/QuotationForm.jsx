@@ -40,10 +40,10 @@ export default function QuotationForm({
 
   return (
     <div className="quotation-form">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-        <h1 className="brand-font" style={{ color: "var(--primary)" }}>Event Planner</h1>
-        <button className="btn btn-outline" onClick={onReset} style={{ borderColor: "var(--error)", color: "var(--error)" }}>
-          Clear All
+      <div className="mobile-stack" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", gap: "1rem" }}>
+        <h1 className="brand-font" style={{ color: "var(--primary)", margin: 0 }}>Event Planner</h1>
+        <button className="btn btn-outline" onClick={onReset} style={{ borderColor: "var(--error)", color: "var(--error)", padding: "0.5rem 1rem", fontSize: "0.8rem" }}>
+          Clear Selection
         </button>
       </div>
 
@@ -274,7 +274,7 @@ export default function QuotationForm({
       </section>
 
       {/* Action Buttons */}
-      <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
+      <div className="mobile-stack" style={{ display: "flex", gap: "1rem", justifyContent: "flex-end", marginTop: "2rem" }}>
         <button className="btn btn-outline" onClick={onGenerateTeam}>Preview Team Sheet</button>
         <button className="btn btn-primary" onClick={onGenerateQuote}>Generate Quotation</button>
       </div>

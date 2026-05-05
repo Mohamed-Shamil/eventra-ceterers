@@ -213,7 +213,7 @@ export default function AdminPanel({ onBack }) {
         onCancel={closeModal}
       />
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
+      <div className="mobile-stack" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <button className="btn btn-outline" onClick={onBack} style={{ padding: "0.5rem" }}>← Back</button>
           <h1 className="brand-font" style={{ color: "var(--primary)", margin: 0 }}>Admin Dashboard</h1>
@@ -221,13 +221,13 @@ export default function AdminPanel({ onBack }) {
         <div className="nav-actions">
           <button className={`btn ${activeTab === "menu" ? "btn-primary" : "btn-outline"}`} onClick={() => setActiveTab("menu")}>Menu</button>
           <button className={`btn ${activeTab === "branches" ? "btn-primary" : "btn-outline"}`} onClick={() => setActiveTab("branches")}>Branches</button>
-          <button className={`btn ${activeTab === "settings" ? "btn-primary" : "btn-outline"}`} onClick={() => setActiveTab("settings")}>Styles & Options</button>
-          <button className="btn" style={{ color: "var(--error)", fontSize: "0.7rem", border: "1px dashed var(--error)" }} onClick={() => {
-            if(window.confirm("This will delete ALL custom data and restore defaults. Proceed?")) {
+          <button className={`btn ${activeTab === "settings" ? "btn-primary" : "btn-outline"}`} onClick={() => setActiveTab("settings")}>Styles</button>
+          <button className="btn" style={{ color: "var(--error)", fontSize: "0.6rem", border: "1px dashed var(--error)", padding: "0.4rem" }} onClick={() => {
+            if(window.confirm("Restore defaults?")) {
               localStorage.removeItem("eventra_data");
               window.location.reload();
             }
-          }}>Reset All</button>
+          }}>Reset</button>
         </div>
       </div>
 
@@ -244,14 +244,14 @@ export default function AdminPanel({ onBack }) {
           <div className="grid">
             {Object.entries(data.menu).map(([cat, subs]) => (
               <div key={cat} className="card" style={{ position: "relative" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", borderBottom: "2px solid var(--light)", paddingBottom: "0.8rem" }}>
+                <div className="mobile-stack" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", borderBottom: "2px solid var(--light)", paddingBottom: "0.8rem", gap: "1rem" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                     <h3 className="brand-font" style={{ color: "var(--primary)", margin: 0 }}>{cat}</h3>
-                    <button className="btn btn-outline" style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem" }} onClick={() => renameCategory(cat)}>Edit Name</button>
+                    <button className="btn btn-outline" style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem" }} onClick={() => renameCategory(cat)}>✎</button>
                   </div>
                   <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button className="btn btn-secondary" style={{ padding: "0.3rem 0.8rem", fontSize: "0.8rem" }} onClick={() => addSubcategory(cat)}>+ Subcategory</button>
-                    <button className="btn" style={{ color: "var(--error)", padding: "0.3rem", fontSize: "0.8rem" }} onClick={() => deleteCategory(cat)}>Delete Cat</button>
+                    <button className="btn btn-secondary" style={{ padding: "0.3rem 0.8rem", fontSize: "0.8rem" }} onClick={() => addSubcategory(cat)}>+ Sub</button>
+                    <button className="btn" style={{ color: "var(--error)", padding: "0.3rem", fontSize: "0.8rem" }} onClick={() => deleteCategory(cat)}>Delete</button>
                   </div>
                 </div>
                 
