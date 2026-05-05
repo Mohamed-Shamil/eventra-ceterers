@@ -1,20 +1,22 @@
-import { useState, useRef } from "react";
-import { MENU, C, BRANCHES, COUNTER_TYPES, STAGE_PACKAGES, SETTINGS } from "./constants/MenuData";
+import { useState, useRef, useEffect } from "react";
+import { getAppData } from "./constants/DataManager";
 import QuotationForm from "./components/QuotationForm";
 import CustomerQuotation from "./components/CustomerQuotation";
 import TeamSheet from "./components/TeamSheet";
+import AdminPanel from "./components/AdminPanel";
 import logo from "./assets/logo.png";
 
 function App() {
-  const [step, setStep] = useState(0); // 0=form, 1=customer, 2=team
+  const [step, setStep] = useState(0); // 0=form, 1=customer, 2=team, 3=admin
+  const [appData, setAppData] = useState(getAppData());
   const [branch, setBranch] = useState(0);
   const [evt, setEvt] = useState({
     customerName: "",
     venue: "",
     date: "",
     guestCount: "",
-    counterType: COUNTER_TYPES[0],
-    stage: STAGE_PACKAGES[0],
+    counterType: "",
+    stage: "",
     boysNeeded: false,
     captainCount: 0,
     supervisorCount: 0,
@@ -27,15 +29,32 @@ function App() {
   });
   const [menuItems, setMenuItems] = useState({});
 
+  // Update counterType and stage defaults when appData loads
+  useEffect(() => {
+    setEvt(p => ({
+      ...p,
+      counterType: appData.counterTypes?.[0] || "Standard",
+      stage: appData.stagePackages?.[0] || "Standard"
+    }));
+  }, [appData]);
+
+  // Refresh data when entering views
+  useEffect(() => {
+    if (step !== 3) {
+      setAppData(getAppData());
+    }
+  }, [step]);
+
   const handlePrint = () => {
     window.print();
   };
 
   const resetForm = () => {
-    if (window.confirm("Are you sure you want to clear all data?")) {
+    if (window.confirm("Are you sure you want to clear all current selection?")) {
       setEvt({
         customerName: "", venue: "", date: "", guestCount: "",
-        counterType: COUNTER_TYPES[0], stage: STAGE_PACKAGES[0],
+        counterType: appData.counterTypes?.[0] || "Standard", 
+        stage: appData.stagePackages?.[0] || "Standard",
         boysNeeded: false, captainCount: 0, supervisorCount: 0, boysCount: 0,
         totalRate: "", cashAdvance: "", extras: "",
         specialNote: "", settings: [],
@@ -49,11 +68,11 @@ function App() {
     <div className="app-container">
       {/* Navbar */}
       <nav className="nav no-print">
-        <div className="nav-brand">
+        <div className="nav-brand" onClick={() => setStep(0)} style={{ cursor: "pointer" }}>
           <img src={logo} alt="Eventra Logo" className="nav-logo" />
           <span className="nav-title brand-font">EVENTRA EVENTS</span>
         </div>
-        <div style={{ display: "flex", gap: "1rem" }}>
+        <div className="nav-actions">
           <button 
             className={`btn ${step === 0 ? "btn-secondary" : "btn-outline"}`} 
             onClick={() => setStep(0)}
@@ -75,6 +94,13 @@ function App() {
           >
             Team Sheet
           </button>
+          <button 
+            className={`btn ${step === 3 ? "btn-secondary" : "btn-outline"}`} 
+            onClick={() => setStep(3)}
+            style={{ color: step === 3 ? "var(--primary)" : "white", borderColor: "var(--secondary)", borderStyle: "dashed" }}
+          >
+            Admin
+          </button>
         </div>
       </nav>
 
@@ -88,6 +114,7 @@ function App() {
             setMenuItems={setMenuItems} 
             branch={branch} 
             setBranch={setBranch}
+            appData={appData}
             onGenerateQuote={() => setStep(1)}
             onGenerateTeam={() => setStep(2)}
             onReset={resetForm}
@@ -97,7 +124,7 @@ function App() {
           <CustomerQuotation 
             evt={evt} 
             menuItems={menuItems} 
-            branch={BRANCHES[branch]} 
+            branch={appData.branches[branch] || appData.branches[0]} 
             onBack={() => setStep(0)}
             onPrint={handlePrint}
           />
@@ -106,10 +133,13 @@ function App() {
           <TeamSheet 
             evt={evt} 
             menuItems={menuItems} 
-            branch={BRANCHES[branch]} 
+            branch={appData.branches[branch] || appData.branches[0]} 
             onBack={() => setStep(0)}
             onPrint={handlePrint}
           />
+        )}
+        {step === 3 && (
+          <AdminPanel onBack={() => setStep(0)} />
         )}
       </main>
 

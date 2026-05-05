@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { MENU, BRANCHES, COUNTER_TYPES, STAGE_PACKAGES, SETTINGS, C } from "../constants/MenuData";
 
 export default function QuotationForm({ 
-  evt, setEvt, menuItems, setMenuItems, branch, setBranch, onGenerateQuote, onGenerateTeam, onReset 
+  evt, setEvt, menuItems, setMenuItems, branch, setBranch, appData, onGenerateQuote, onGenerateTeam, onReset 
 }) {
   const [openCats, setOpenCats] = useState({});
+  const { menu, branches, counterTypes = [], stagePackages = [], settings = [] } = appData;
 
   const toggleCat = (cat) => setOpenCats(p => ({ ...p, [cat]: !p[cat] }));
 
@@ -51,7 +51,7 @@ export default function QuotationForm({
       <section className="card">
         <h3 className="label" style={{ marginBottom: "1rem" }}>Select Operating Branch</h3>
         <div className="grid grid-2">
-          {BRANCHES.map((b, i) => (
+          {branches.map((b, i) => (
             <div 
               key={b.name} 
               className={`branch-option ${branch === i ? "active" : ""}`}
@@ -112,13 +112,13 @@ export default function QuotationForm({
           <div>
             <label className="label">Service Style</label>
             <select value={evt.counterType} onChange={e => setEvt(p => ({ ...p, counterType: e.target.value }))}>
-              {COUNTER_TYPES.map(c => <option key={c}>{c}</option>)}
+              {counterTypes.map(c => <option key={c}>{c}</option>)}
             </select>
           </div>
           <div>
             <label className="label">Stage & Decor</label>
             <select value={evt.stage} onChange={e => setEvt(p => ({ ...p, stage: e.target.value }))}>
-              {STAGE_PACKAGES.map(s => <option key={s}>{s}</option>)}
+              {stagePackages.map(s => <option key={s}>{s}</option>)}
             </select>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function QuotationForm({
           </span>
         </div>
         
-        {Object.entries(MENU).map(([cat, subcats]) => (
+        {Object.entries(menu).map(([cat, subcats]) => (
           <div key={cat} style={{ marginBottom: "1rem" }}>
             <div 
               onClick={() => toggleCat(cat)}
@@ -203,7 +203,7 @@ export default function QuotationForm({
       <section className="card">
         <h3 className="label">Additional Services & Staff</h3>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.8rem", marginBottom: "1.5rem" }}>
-          {SETTINGS.map(s => (
+          {settings.map(s => (
             <button 
               key={s} 
               className={`btn ${evt.settings.includes(s) ? "btn-primary" : "btn-outline"}`}
